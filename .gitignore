@@ -1,0 +1,17 @@
+# Node modules (NEVER commit these, they are heavy and generated locally)
+node_modules/
+backend/node_modules/
+
+# Database dumps (Security risk to upload your database structure/data)
+*.sql
+file.sql
+
+# Environment Variables (If you add a .env file later for passwords, it goes here)
+.env
+
+# OS generated files (Keeps Mac/Windows junk files out of your repo)
+.DS_Store
+Thumbs.db
+
+# Editor directories (Keeps your specific VS Code settings private)
+.vscode/
